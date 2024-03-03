@@ -1,0 +1,123 @@
+Before start with EDA section I need to say that I bring my gratitude to creators for taking the whole dataset.
+
+I want to investigate the influence of different groups of guests on profit of hotels network (I don't so confident about network, it also can be random hotels from random region, but let's assume it).
+During data analisys I will do some unnecessary stuff, the main goal is exploration of profit by guests in each of following groups. I decided to split dataframe on these 5 natural groups:
+1)Families with children
+2)Families with babies (it can be some children in family, but i decided to judge by smallest member of the family)
+3)Lonely adults
+4)Couples of adults (it can be married couple or simple two friends or parent with grown child)
+5)Groups of adults (again: it could be one family or company of friends etc)
+
+I will try to find the weakest elements of engage managment. This is my first project, please don't be strict!
+
+
+EDA section
+Let's see on head of dataframe, describe numeric columns and get information about its nan-values.
+To be consistent, "index" column duplicate real index. Next quastionable column is lead time: I don't know how to book a hotel 737 days before chek in, but, okay, let's suppose that it is possibele.
+I also have some doubts about 55 adults in one room, but, okay, it is a single situation. What is more vital: "children" column is a float type column. Isn't that weird?
+I can't understand what is column "agent" describe: it can be earning of tour agency or number of agent - both variants are possible (4th row: for 1 night someone paid 75$ to hotel
+and agent comission was 304$ - it is a very contradictionary statement). There wasn't information of currency od Average Day Rate. Let's assume it is dollar scale.
+But what is even more strange - that is minimal Average Day Rate. Minimal adr is negative! We must to correct it.
+Let's drop some columns, change some NaN values and not valid values in others and appoint int type for children column.
+
+During the exploration there were some assumptons.
+First of all, there are 0 values in "adr" and in "stays_in_weekend_nights", "stays_in_week_nights". I checked notices with 0 "adr": they weren't belong to repetitive guests who have taken a free suggestion...
+So, let's guess there are some mistakes in actual dataset.
+I have changed 0 values with median by columns. Since we don't need all columns I Have taken only several columns for investigation. I preferred to create some new features. New feature 
+"all_stay_nights" is "stays_in_weekend_nights" + "stays_in_week_nights". I filled its 0 with median value.
+
+
+Main part of investigation
+Firstly, I have visualized summary adr of each group by 3 symptom: canceled/proved bookings, hotel type (resort/city), is guests repeated or not. Please notice, that these graphics based on potential
+revenue (how much money are they ready to pay?), in 2 and 3 plots canceled bookings were included. Calculation built on summary of "total_revenue" column, which is result of multiplication of "adr" and ""
+And there are already a several notes:
+
+I have grouped data by groups and got 3 plots:
+
+1) Summary adr by canceled/proved reservation
+There are good news and bad news. Good news - adr of proved bookings in all categories is greater than canceled. Bad news - there are still huge part of potential revenue in canceled reservation. It is even more
+than 40% in each group. Why is that so?
+Perhaps there are a lot of guests that aren't acquainted with hotel service - to say it more simplier - they are not repeated guests. I have checked it further.
+
+2)Summary adr of hotel types
+Obvious notice: families with children aren't engaged with resort hotels - infrastructure is more important for them. So there are almost equal parts of demand from that point of view. But we can see 
+noticeable difference between preferences of groups with only adults: resort hotels are popular option for them. Remember, that slice based on adr summary, not on bookings cuont! Investegation only from money point of view.
+
+3)Summary adr of repeated/not repeated guest
+Situation is very interesting: amount of new guests is much bigger than old ones in ech group. It seems scary... Is that so? Maybe marketing department has done a succeseful move and manipulation has attracted many guest. 
+Possibly, this hotel network is new on the market and they simply didn't have time to catch more repeated guests.
+
+After third plot I have decided to plot revenue distribution by time. I changed "arrival_date_month" to a "month_number" column for simplicity of sorting. As I expected, I saw a cycle distribution by years with increasing
+amount of avg revenue. But there were only 3 years: 2015, 2016, 2017. We have last 5 months of 2015, all month of 2016 and first 8 month of 2017. I visualized it also only by year (it isn't absolutely corract though).
+We can imagine that we see ascending trend (2017 with last 4 month would be greater than all 2016). At least we can see now ascending trend on each of presenteed month. August is absolutely top performer in each year.
+Nevertheless we can't answer previous question about overwhelming majority of new guests. 3-year period isn't enough to get real answer. More likely that hotel company was growing at this period, and we simply need 2-3
+additional years to give a feedback about guests retention.
+
+
+
+Recently I have promised more detailed exploration about canceled/proved reservation case. Let's do it.
+
+I have grouped data by groups, but I also wanted to see subgroups - slice can be more demonstrative. So, I divide all data once again by repeated_guest flag and got 10 groups - repeated and not repeated part of guests.
+I take a mean and count functions for "total_revenue" and "lead_time" columns. I wanted to use median instead mean for cut excess, but mean is more accurate in this case. These dataframes can be useful
+in the future but for now I decided to take what I wanted to take from them. I speak about share of canceled bookings in each subgroup. I have gained relatively valuable results:
+
+1)"repeated children families"
+This is a very small group, but it has only 2% money that hotels haven't received. We have nothing in particular: repeated guests are loyal.
+
+
+2)"not repeated children families"
+This is much bigger group than "repeated children families". There we can see 44% money that hotels haven't received. Families with 1 or 2 children are more valuable (because they spend more in average during stay in the hotel). 
+Top performer for hotels is resort hotels category. But this popular option underperform on cancelation rate: there so many families with 1-2 children that declined booking. Interesting that families with 2 children is more
+strict to conditions than families with only one child. Perhaps Dads and moms don't want to look after chldren during thei holiday. And if the can manage with one - the can't manage with 2 again. They want to get some rest, and
+give their children more activities. It seems that would be great to add some clubs for children, masterclasses, trainings, entertainment with supervisors. Also let's look on average lead time. If clients are more loyal, they book
+hotel room 1-2 weeks before check in. If clients are new, they book on 2-4 months(!) before. Someone can just add more "last minute deals" on the site to attract more guests (previously I hve guessed that it is attraction stage now).
+
+
+3)"repeated babies families"
+It is the smallest, but not the least interesting group. There were only 12 reservations by repeated families with babies and it has 0% of cancelations! To be more formal, that is the most loyal group of guests!
+
+
+4)"not repeated babies families"
+There are 167 cancellations in that group - that is 23% of cancellations ~ 110976$. I think it is reasonable to appeal again to lack of conditions for babies and children.
+
+
+5)"repeated lonely adults"
+It is traditionaly the hardest group for retention not only on the way of repetitive bookings but even on the way of first upcoming booking. Lonely adults are the most mobile people. I believe that 11% of cancellation is good result.
+But again it seems that all lonely adults who has cancelled booking have time to find something better (lead time: 8 days for "hunted tigers" and 1 month for the "free birds"). Again we can see an example where loyalty doesn't matter.
+
+
+6)"not repeated lonely adults"
+It is similiar to "repeated lonely adults", but there more bookings and more cancellation rate. Potentiall reasons for that are already noticed in previous subgroup (just look on 3-3.5 months lead time...).
+
+
+7)"repeated couples of adults"
+Again we can see cancellations with huge lead time (3.5-6 months). Even repeated guests can't wait so long. There are around 25% of cancelled bookings. Money loss is 20% ~ 68592$. It seems possible to remember them of their previous
+beings in that hotel, suggest some discounts ~1-2 week before their goal holiday time.
+
+
+8)"not repeated couples of adults"
+Money loss rate of "not repeated couples of adults" is 39%, but this subgroup has the biggest loss by money in particular - 11113481$. Almost 40% (by count, not by money) of couples refuse to visit hotel at first time against
+only 27% of couples who refuse to visit a hotel again. Classic idea for high-quality, but at that moment only developing business is confirmed once again: attracting is more difficult than retaining. Interestingly that average 
+lead time for them is 4.5-5.5 month. Perhaps there is no more even half-year planning for most of people - feature of modern life.
+
+
+9)"repeated groups of adults"
+6% of revenue loss, but there are only 46 groups of repeated guests. It is good result (1 excess here: who does book a hotel room 8 month before?), it doesn't matter because of subgroup coverage though.
+
+
+10)"not repeated groups of adults"
+Under-received (due to cancellations) money share in that subgroup is 37% ~ 1197850$. The most frequent cases of cancelations are 3 and 4 people in the group - exactly like it is in the "repeated groups of adults" subgroup.
+I can make an assumption that there weren't enough rooms in hotels for 3-4 adults or that rooms were occupied with 3-4 member families.
+
+
+
+Conclusion
+To be honest I have been missing id column in dataset so musch during the whole exploration, it could be more convenient to find the real loyal clients. It could be great also to know location of the hotels and hotels ids.
+
+More likely there are many hotels in this dataset which are popular for lonely adults or for pairs of adults. Obvious advice: continue to gain customer base, especially on most profitable lonely adults or for pairs of adults.
+92% of the declared bookings by repeated lonely adults were proved, eventhough we don't know how many lonely visitors hotels alredy got, I can guess, that there are enough high probability for their comeback. But to be more
+sure, we need to explore more data. For 72% of couples of adults who comeback I can say exactly the same. Moreover couple is more profitable because of their frequency.
+
+Potentially almost all locations of hotels are very quiet and cozy places, where people want to comeback, despite its lack of rooms for 3-4 adults and entertainment for their children. 
+
+It was my very first project. I am glad to finish it, I haven't any special-oriented recomendation for hotels though.
