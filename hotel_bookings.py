@@ -6,7 +6,8 @@ import numpy as np
 import io
 
 # Reading the file
-hotel_bookings = pd.read_csv(r'C:\Users\User\Downloads\hotel_bookings.csv')
+# hotel_bookings = pd.read_csv(r'C:\Users\User\Downloads\hotel_bookings.csv')
+hotel_bookings = pd.read_csv(r'.\hotel_bookings.csv')
 
 # Setting a convenient width
 pd.set_option('display.width', None)
